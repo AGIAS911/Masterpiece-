@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول كطبيب - Sugar Hero</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="#" class="lang-switch"><span>🌐</span> اختر اللغة</a>
+        <a href="index.html" class="back-circle-btn" title="رجوع">➔</a>
+    </header>
+
+    <main class="main-container">
+        <div class="auth-card">
+            <h2 class="view-heading">تسجيل الدخول كطبيب</h2>
+
+            <form class="form-wrapper" onsubmit="handleDoctorLogin(event)">
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="doc-email" placeholder="أدخل البريد الإلكتروني" value="doctor@clinic.com" required>
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="doc-pass" placeholder="أدخل كلمة المرور" value="12345678" required>
+                    <span class="password-toggle" onclick="togglePassword('doc-pass')">👁️</span>
+                </div>
+
+                <button type="submit" class="btn-submit">تسجيل الدخول</button>
+                <a href="#" class="forgot-link">نسيت كلمة المرور؟</a>
+
+                <div class="sso-divider"><span>تسجيل الدخول باستخدام</span></div>
+                <div class="sso-grid">
+                    <button type="button" class="sso-btn">G</button>
+                    <button type="button" class="sso-btn">⊞</button>
+                    <button type="button" class="sso-btn">🏥</button>
+                    <button type="button" class="sso-btn"></button>
+                </div>
+
+                <div class="sso-divider"><span>أو</span></div>
+                <a href="doctor-register.html" class="bottom-action-btn">بدء حساب طبيب</a>
+            </form>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        إشعار الامتثال للمعايير الطبية HIPAA | <a href="#">شروط الخدمة</a>
+    </footer>
+
+    <!-- الترتيب هنا هو الأساس لعمل الدخول -->
+    <script src="mockData.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

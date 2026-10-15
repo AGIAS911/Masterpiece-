@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم الإدارية المركزية - Sugar Hero</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 270px;
+            --topbar-height: 70px;
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --sidebar-active: #4f46e5;
+            --main-bg: #f8fafc;
+            --card-border: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--main-bg);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 1. الشريط الجانبي (Sidebar Layout) */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-brand .logo-icon {
+            font-size: 2rem;
+            background: rgba(255,255,255,0.08);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 1.25rem;
+            margin: 0;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-brand span {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            display: block;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 15px 12px;
+            margin: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-item-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: right;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item-btn:hover {
+            background-color: var(--sidebar-hover);
+            color: white;
+        }
+
+        .nav-item-btn.active {
+            background-color: var(--sidebar-active);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+        }
+
+        .nav-badge {
+            margin-right: auto;
+            background: #ef4444;
+            color: white;
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 800;
+        }
+
+        .sidebar-footer {
+            padding: 18px 16px;
+            border-top: 1px solid #1e293b;
+            background: rgba(0,0,0,0.15);
+        }
+
+        .admin-profile-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .admin-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .admin-info h4 { margin: 0; font-size: 0.88rem; color: white; }
+        .admin-info p { margin: 0; font-size: 0.72rem; color: #94a3b8; }
+
+        .btn-sidebar-logout {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-sidebar-logout:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* 2. منطقة المحتوى الرئيسي (Main Viewport) */
+        .admin-content {
+            margin-right: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            min-height: 100vh;
+        }
+
+        .top-stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 18px;
+        }
+
+        .stat-card-widget {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            border-right: 5px solid var(--primary);
+        }
+
+        .stat-card-widget.danger { border-right-color: #ef4444; }
+        .stat-card-widget.success { border-right-color: #10b981; }
+        .stat-card-widget.warning { border-right-color: #f59e0b; }
+
+        .stat-card-widget span { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
+        .stat-card-widget h3 { font-size: 2.1rem; margin: 6px 0 0; color: #0f172a; font-weight: 900; }
+
+        /* تبويبات الأقسام */
+        .admin-tab-view {
+            display: none;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .admin-tab-view.active {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-box {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+        }
+
+        .panel-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-pill-stack {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .filter-pill.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* الجداول الأنيقة */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.82rem;
+            padding: 12px 14px;
+            border-bottom: 2px solid var(--card-border);
+            font-weight: 800;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid var(--card-border);
+            font-size: 0.92rem;
+            vertical-align: middle;
+        }
+
+        .user-tag-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-round {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            border: 1px solid #cbd5e1;
+        }
+
+        /* أزرار العمليات */
+        .btn-action-view {
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-action-view:hover {
+            background: #e2e8f0;
+        }
+
+        /* نافذة منبثقة لتفاصيل المريض أو الطبيب (Modal) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 75px; }
+            .sidebar-brand h2, .sidebar-brand span, .nav-item-btn span, .admin-info, .btn-sidebar-logout span { display: none; }
+            .admin-content { margin-right: 75px; padding: 15px; }
+            .nav-item-btn { justify-content: center; padding: 14px 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. الشريط الجانبي الثابت (Sidebar) -->
+    <aside class="sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <div class="logo-icon">🩺</div>
+                <div>
+                    <h2>SugarHero</h2>
+                    <span>لوحة الإدارة المركزية</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li>
+                    <button class="nav-item-btn active" onclick="switchAdminTab('tab-overview')">
+                        <span>📊</span>
+                        <span>نظرة عامة ومؤشرات</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" onclick="switchAdminTab('tab-doctors')">
+                        <span>🩺</span>
+                        <span>ركن الأطباء والعيادات</span>
+                        <span class="nav-badge" id="pendingDocSidebarBadge">0</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" onclick="switchAdminTab('tab-patients')">
+                        <span>🧒🏽</span>
+                        <span>ركن المرضى والسجلات</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" onclick="switchAdminTab('tab-guardians')">
+                        <span>👨‍👩‍👦</span>
+                        <span>أولياء الأمور والاشتراكات</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="admin-profile-pill">
+                <div class="admin-avatar">🛡️</div>
+                <div class="admin-info">
+                    <h4>مسؤول النظام</h4>
+                    <p>admin@sugarhero.com</p>
+                </div>
+            </div>
+            <button class="btn-sidebar-logout" onclick="SugarHeroDB.logout()">
+                <span>🚪</span>
+                <span>تسجيل الخروج الآمن</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- 2. ساحة العرض والمحتوى التفاعلي -->
+    <main class="admin-content">
+
+        <!-- بطاقات العدادات العلوية السريعة المشتركة -->
+        <div class="top-stats-row">
+            <div class="stat-card-widget">
+                <span>إجمالي المرضى</span>
+                <h3 id="statTotalPatients">0</h3>
+            </div>
+            <div class="stat-card-widget danger">
+                <span>إنذارات هبوط سكر حرجة</span>
+                <h3 id="statDangerAlerts" style="color:#ef4444;">0</h3>
+            </div>
+            <div class="stat-card-widget success">
+                <span>أطباء معتمدون نشطون</span>
+                <h3 id="statActiveDocs" style="color:#10b981;">0</h3>
+            </div>
+            <div class="stat-card-widget warning">
+                <span>طلبات أطباء قيد التدقيق</span>
+                <h3 id="statPendingDocs" style="color:#f59e0b;">0</h3>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             القسم 1: نظرة عامة ومؤشرات النظام (Overview)
+             ======================================================== -->
+        <section id="tab-overview" class="admin-tab-view active">
+            <div class="panel-box">
+                <div class="panel-header-row">
+                    <div>
+                        <h2 style="font-size: 1.3rem; margin:0 0 4px;">🚨 الحالات الحرجة التي تتطلب تدخلاً فورياً (Triage Queue)</h2>
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin:0;">مرضى سجلوا قراءات هبوط حاد (< 70 mg/dL) أو ارتفاع خطير (> 250 mg/dL)</p>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المريض</th>
+                            <th>التشخيص</th>
+                            <th>آخر قراءة</th>
+                            <th>الطبيب المتابع</th>
+                            <th>ولي الأمر وهاتف الطوارئ</th>
+                            <th>الإجراء الإداري</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overviewTriageBody"></tbody>
+                </table>
+            </div>
+
+            <!-- بطاقة أداء الذكاء الاصطناعي -->
+            <div class="panel-box" style="background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); border-color: #bbf7d0;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <h3 style="margin:0 0 6px; color:#166534;">حالة محرك الذكاء الاصطناعي (Gemini Vision AI)</h3>
+                        <p style="margin:0; font-size:0.88rem; color:#15803d;">تم تحليل 5 وجبات اليوم بنجاح | متوسط دقة التعرف على الكربوهيدرات: 99.2%</p>
+                    </div>
+                    <span style="background:#22c55e; color:white; padding:4px 12px; border-radius:20px; font-weight:bold; font-size:0.8rem;">يعمل بكفاءة 🟢</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================
+             القسم 2: ركن الأطباء والعيادات (Doctors Hub)
+             ======================================================== -->
+        <section id="tab-doctors" class="admin-tab-view">
+            <!-- طلبات التحقق قيد الانتظار -->
+            <div class="panel-box" style="border-right: 5px solid #f59e0b;">
+                <div class="panel-header-row">
+                    <div>
+                        <h2 style="font-size: 1.25rem; margin:0 0 4px;">طلبات اعتماد التراخيص الطبية الجديدة</h2>
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin:0;">يتعين التحقق من سجل نقابة الأطباء قبل التفعيل الإكلينيكي</p>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الطبيب</th>
+                            <th>التخصص</th>
+                            <th>رقم الترخيص</th>
+                            <th>المستشفى / العيادة</th>
+                            <th>الخبرة</th>
+                            <th>تاريخ الطلب</th>
+                            <th style="text-align:center;">القرار الإداري</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingDoctorsTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- جدول الأطباء المعتمدين -->
+            <div class="panel-box">
+                <div class="panel-header-row">
+                    <div>
+                        <h2 style="font-size: 1.25rem; margin:0 0 4px;">الأطباء والاستشاريون المعتمدون بالمنصة</h2>
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin:0;">عرض كامل الكادر الطبي مع إمكانية استعراض مرضى كل طبيب</p>
+                    </div>
+                    <input type="text" id="docSearchBox" placeholder="🔍 بحث بطبيب أو تخصص..." class="search-input" style="width: 250px;" oninput="filterDoctors()">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الطبيب</th>
+                            <th>التخصص الدقيق</th>
+                            <th>العيادة المعتمدة</th>
+                            <th>الهاتف المهني</th>
+                            <th>المرضى التابعون</th>
+                            <th style="text-align:center;">إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="verifiedDoctorsTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ========================================================
+             القسم 3: ركن المرضى والسجلات الطبية (Patients Directory)
+             ======================================================== -->
+        <section id="tab-patients" class="admin-tab-view">
+            <div class="panel-box">
+                <div class="panel-header-row">
+                    <div>
+                        <h2 style="font-size: 1.25rem; margin:0 0 4px;">سجل المرضى الشامل</h2>
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin:0;">قائمة بكافة المرضى (أطفال، كبار سن، ومستقلين) ومؤشراتهم</p>
+                    </div>
+
+                    <!-- أزرار الفلترة السريعة -->
+                    <div class="filter-pill-stack">
+                        <button class="filter-pill active" onclick="filterPatientCategory('all', this)">الكل</button>
+                        <button class="filter-pill" onclick="filterPatientCategory('kid', this)">الأطفال 🦸🏽‍♂️</button>
+                        <button class="filter-pill" onclick="filterPatientCategory('elderly', this)">كبار السن 👴🏽</button>
+                        <button class="filter-pill" onclick="filterPatientCategory('adult', this)">البالغين المستقلين 🧔🏻</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <input type="text" id="patientSearchBox" placeholder="🔍 ابحث باسم المريض أو نوع السكري..." class="search-input" style="width: 100%;" oninput="filterPatientsList()">
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المريض</th>
+                            <th>الفئة والعمر</th>
+                            <th>نوع السكري</th>
+                            <th>التراكمي (HbA1c)</th>
+                            <th>الطبيب المشرف</th>
+                            <th>الحالة (آخر فحص)</th>
+                            <th style="text-align:center;">الملف الطبي الكامل</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientsFullTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ========================================================
+             القسم 4: أولياء الأمور والاشتراكات (Guardians & Subscriptions)
+             ======================================================== -->
+        <section id="tab-guardians" class="admin-tab-view">
+            <div class="panel-box">
+                <div class="panel-header-row">
+                    <div>
+                        <h2 style="font-size: 1.25rem; margin:0 0 4px;">إدارة حسابات الأسرة وخطوط الطوارئ</h2>
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin:0;">متابعة خطط الفوترة وأرقام الطوارئ المركزية المربوطة بالأطفال</p>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ولي الأمر المسجل</th>
+                            <th>صلة القرابة</th>
+                            <th>هاتف الطوارئ المعتمد</th>
+                            <th>خطة الاشتراك المفعلة</th>
+                            <th>تاريخ التجديد</th>
+                            <th>المرضى المربوطون بحسابه</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guardiansTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- نافذة منبثقة لعرض السجل الطبي الكامل للمريض (Modal) -->
+    <div id="patientDetailsModal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeModal()">✕</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- ربط السكربتات الموحدة -->
+    <script src="mockData.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let currentPatientCategory = 'all';
+
+        // 1. التبديل بين أقسام السايد بار
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.admin-tab-view').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item-btn').forEach(btn => btn.classList.remove('active'));
+
+            const targetTab = document.getElementById(tabId);
+            if (targetTab) targetTab.classList.add('active');
+
+            event.currentTarget.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 2. تعبئة المؤشرات الإحصائية العامة
+        function refreshAdminDashboard() {
+            const patients = SugarHeroDB.data.patients || [];
+            const doctors = SugarHeroDB.data.doctors || [];
+            const logs = SugarHeroDB.data.glucoseLogs || [];
+
+            document.getElementById('statTotalPatients').innerText = patients.length;
+            document.getElementById('statActiveDocs').innerText = doctors.filter(d => d.status === 'verified').length;
+            
+            const pendingDocs = doctors.filter(d => d.status === 'pending');
+            document.getElementById('statPendingDocs').innerText = pendingDocs.length;
+            document.getElementById('pendingDocSidebarBadge').innerText = pendingDocs.length;
+
+            const dangerAlerts = logs.filter(l => l.status === 'danger').length;
+            document.getElementById('statDangerAlerts').innerText = dangerAlerts;
+
+            renderOverviewTriage();
+            renderDoctorsHub();
+            renderPatientsDirectory();
+            renderGuardiansHub();
+        }
+
+        // 3. بناء قسم النظرة العامة (الحالات الحرجة)
+        function renderOverviewTriage() {
+            const tbody = document.getElementById('overviewTriageBody');
+            tbody.innerHTML = '';
+            const dangerLogs = SugarHeroDB.data.glucoseLogs.filter(l => l.status === 'danger');
+
+            dangerLogs.forEach(log => {
+                const p = SugarHeroDB.data.patients.find(pt => pt.id === log.patientId);
+                if (!p) return;
+
+                const dp = SugarHeroDB.data.doctorPatients.find(rel => rel.patientId === p.id);
+                const doc = dp ? SugarHeroDB.data.doctors.find(d => d.id === dp.doctorId) : null;
+                const guardian = p.guardianId ? SugarHeroDB.data.guardians.find(g => g.id === p.guardianId) : null;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${p.avatar} ${p.name}</strong></td>
+                    <td>${p.diabetesType}</td>
+                    <td><strong style="color:#ef4444; font-size:1.1rem;">🩸 ${log.value} mg/dL</strong></td>
+                    <td>${doc ? doc.name : 'غير محدد'}</td>
+                    <td>${guardian ? `${guardian.name} (${guardian.emergencyContact})` : 'مريض مستقل'}</td>
+                    <td>
+                        <button class="btn-action-view" onclick="openPatientModal(${p.id})">فتح الملف السريري 👁️</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 4. بناء ركن الأطباء
+        function renderDoctorsHub() {
+            const pendingTbody = document.getElementById('pendingDoctorsTableBody');
+            const verifiedTbody = document.getElementById('verifiedDoctorsTableBody');
+            pendingTbody.innerHTML = '';
+            verifiedTbody.innerHTML = '';
+
+            const doctors = SugarHeroDB.data.doctors || [];
+
+            // الأطباء قيد الانتظار
+            const pending = doctors.filter(d => d.status === 'pending');
+            if (pending.length === 0) {
+                pendingTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:gray;">لا توجد طلبات اعتماد معلقة.</td></tr>';
+            } else {
+                pending.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${d.name}</strong></td>
+                        <td>${d.specialization}</td>
+                        <td><code>${d.license}</code></td>
+                        <td>${d.clinic}</td>
+                        <td>${d.experience} سنوات</td>
+                        <td>${d.date || 'اليوم'}</td>
+                        <td style="text-align:center;">
+                            <button class="btn btn-doc-primary" style="padding:4px 10px; font-size:0.8rem;" onclick="verifyDocAction(${d.id}, '${d.name}')">اعتماد ✓</button>
+                            <button class="btn-sidebar-logout" style="display:inline-block; width:auto; padding:4px 8px; font-size:0.8rem;" onclick="rejectDocAction(${d.id})">رفض ✕</button>
+                        </td>
+                    `;
+                    pendingTbody.appendChild(tr);
+                });
+            }
+
+            // الأطباء المعتمدون
+            const verified = doctors.filter(d => d.status === 'verified');
+            verified.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${d.name}</strong></td>
+                    <td>${d.specialization}</td>
+                    <td>${d.clinic}</td>
+                    <td>${d.phone || '-'}</td>
+                    <td><span style="background:#e0e7ff; color:#3730a3; padding:2px 8px; border-radius:10px; font-weight:bold;">${d.activePatientsCount || 3} مرضى</span></td>
+                    <td style="text-align:center;">
+                        <button class="btn-action-view" onclick="showDoctorPatientsModal(${d.id}, '${d.name}')">عرض مرضاه 👥</button>
+                    </td>
+                `;
+                verifiedTbody.appendChild(tr);
+            });
+        }
+
+        // 5. بناء ركن المرضى
+        function renderPatientsDirectory() {
+            const tbody = document.getElementById('patientsFullTableBody');
+            tbody.innerHTML = '';
+            let list = SugarHeroDB.data.patients || [];
+
+            if (currentPatientCategory !== 'all') {
+                list = list.filter(p => p.category === currentPatientCategory);
+            }
+
+            list.forEach(p => {
+                const dp = SugarHeroDB.data.doctorPatients.find(rel => rel.patientId === p.id);
+                const doc = dp ? SugarHeroDB.data.doctors.find(d => d.id === dp.doctorId) : null;
+                const lastLog = SugarHeroDB.data.glucoseLogs.find(l => l.patientId === p.id) || { value: 110, status: 'stable' };
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="user-tag-cell">
+                            <div class="user-avatar-round">${p.avatar}</div>
+                            <div>
+                                <strong>${p.name}</strong>
+                                <div style="font-size:0.75rem; color:gray;">#00${p.id}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${p.category === 'kid' ? 'طفل 🧒🏽' : (p.category === 'elderly' ? 'كبير سن 👴🏽' : 'بالغ 🧔🏻')}</td>
+                    <td><strong>${p.diabetesType}</strong></td>
+                    <td><strong>${p.hba1c}%</strong></td>
+                    <td>${doc ? doc.name : 'غير مسند'}</td>
+                    <td>
+                        <span style="color:${lastLog.status === 'danger' ? '#ef4444' : '#10b981'}; font-weight:bold;">
+                            ${lastLog.value} mg/dL ${lastLog.status === 'danger' ? '🚨' : '🟢'}
+                        </span>
+                    </td>
+                    <td style="text-align:center;">
+                        <button class="btn-action-view" onclick="openPatientModal(${p.id})">السجل الطبي 📋</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 6. بناء ركن أولياء الأمور
+        function renderGuardiansHub() {
+            const tbody = document.getElementById('guardiansTableBody');
+            tbody.innerHTML = '';
+            const guardians = SugarHeroDB.data.guardians || [];
+
+            guardians.forEach(g => {
+                const kids = SugarHeroDB.data.patients.filter(p => p.guardianId === g.id);
+                const kidsNames = kids.map(k => `${k.avatar} ${k.name}`).join(' ، ') || 'لا يوجد';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${g.name}</strong></td>
+                    <td>${g.relationship}</td>
+                    <td><strong style="color:#2563eb;">${g.emergencyContact}</strong></td>
+                    <td><span style="background:#dbeafe; color:#1e40af; padding:3px 8px; border-radius:6px; font-weight:bold;">${g.subscriptionPlan}</span></td>
+                    <td>${g.renewalDate}</td>
+                    <td>${kidsNames}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // فلترة فئات المرضى
+        function filterPatientCategory(cat, btn) {
+            currentPatientCategory = cat;
+            document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderPatientsDirectory();
+        }
+
+        // بحث المرضى
+        function filterPatientsList() {
+            const q = document.getElementById('patientSearchBox').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#patientsFullTableBody tr');
+            rows.forEach(r => {
+                r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        // عرض تفاصيل المريض في Modal
+        function openPatientModal(patientId) {
+            const details = SugarHeroDB.getPatientFullDetails(patientId);
+            if (!details) return;
+
+            const modal = document.getElementById('patientDetailsModal');
+            const box = document.getElementById('modalContent');
+
+            box.innerHTML = `
+                <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+                    <div style="font-size:3.5rem;">${details.patient.avatar}</div>
+                    <div>
+                        <h2 style="margin:0 0 4px;">${details.patient.name}</h2>
+                        <span style="background:#e0e7ff; color:#3730a3; padding:2px 8px; border-radius:10px; font-weight:bold; font-size:0.8rem;">${details.patient.diabetesType}</span>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; background:#f8fafc; padding:15px; border-radius:12px;">
+                    <div><strong>ولي الأمر:</strong> ${details.guardian ? `${details.guardian.name} (${details.guardian.emergencyContact})` : 'مريض مستقل'}</div>
+                    <div><strong>الطبيب المشرف:</strong> ${details.doctor ? details.doctor.name : 'غير محدد'}</div>
+                    <div><strong>الوزن الحالي:</strong> ${details.patient.currentWeight} كغم</div>
+                    <div><strong>التراكمي الأخير:</strong> ${details.patient.hba1c}%</div>
+                </div>
+
+                <h4 style="margin:0 0 8px;">الخطة الطبية المعتمدة:</h4>
+                <div style="background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; padding:12px; border-radius:8px; margin-bottom:20px; font-size:0.92rem;">
+                    ${details.relation ? details.relation.treatmentPlan : 'لم تُسجل توصيات بعد.'}
+                </div>
+
+                <h4 style="margin:0 0 8px;">آخر فحوصات سكر مسجلة:</h4>
+                <div style="max-height:140px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px;">
+                    ${details.logs.map(l => `
+                        <div style="display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid #f1f5f9;">
+                            <span>🩸 <strong>${l.value} mg/dL</strong> (${l.time})</span>
+                            <span style="color:${l.status === 'danger' ? 'red' : 'green'}; font-weight:bold;">${l.note}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            modal.style.display = 'flex';
+        }
+
+        // عرض مرضى طبيب محدد في Modal
+        function showDoctorPatientsModal(docId, docName) {
+            const patients = SugarHeroDB.getPatientsForDoctor(docId);
+            const modal = document.getElementById('patientDetailsModal');
+            const box = document.getElementById('modalContent');
+
+            box.innerHTML = `
+                <h2>🩺 المرضى المشرف عليهم: ${docName}</h2>
+                <p style="color:gray;">إجمالي المرضى التابعين للعيادة: ${patients.length}</p>
+
+                <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+                    ${patients.map(p => `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; padding:12px 16px; border-radius:10px;">
+                            <div>
+                                <strong>${p.avatar} ${p.name}</strong> (${p.diabetesType})
+                                <div style="font-size:0.8rem; color:gray;">الخطة: ${p.treatmentPlan}</div>
+                            </div>
+                            <strong style="color:${p.glucoseStatus === 'danger' ? 'red' : 'green'};">${p.lastGlucose} mg/dL</strong>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('patientDetailsModal').style.display = 'none';
+        }
+
+        // اعتماد ورفض الأطباء
+        function verifyDocAction(docId, name) {
+            if (confirm(`تأكيد التحقق من ترخيص مزاولة المهنة لـ (${name}) وتفعيله؟`)) {
+                SugarHeroDB.approveDoctor(docId);
+                refreshAdminDashboard();
+            }
+        }
+
+        function rejectDocAction(docId) {
+            if (confirm('هل أنت متأكد من رفض هذا الطلب؟')) {
+                SugarHeroDB.rejectDoctor(docId);
+                refreshAdminDashboard();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', refreshAdminDashboard);
+    </script>
+</body>
+</html>

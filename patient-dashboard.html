@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة البطل - Sugar Hero</title>
+    <link rel="stylesheet" href="style.css">
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة البطل - فحص الوجبات بالذكاء الاصطناعي</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)">
+    <link href="[https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap](https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap)" rel="stylesheet">
+    <style>
+        .hero-banner { 
+            background: linear-gradient(135deg, #4f46e5, #0284c7); 
+            color: white; 
+            border-radius: 18px; 
+            padding: 25px; 
+            text-align: center; 
+            margin-bottom: 25px; 
+        }
+        .xp-bar-bg { 
+            background: rgba(255,255,255,0.25); 
+            height: 16px; 
+            border-radius: 8px; 
+            width: 100%; 
+            max-width: 380px; 
+            margin: 12px auto 6px; 
+            overflow: hidden; 
+        }
+        .xp-bar-fill { 
+            background: #34d399; 
+            height: 100%; 
+            transition: width 0.5s ease; 
+        }
+        .action-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+            gap: 20px; 
+        }
+        .action-box { 
+            background: white; 
+            border: 2px solid var(--border-color); 
+            border-radius: 14px; 
+            padding: 25px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            position: relative;
+        }
+        .action-box:hover { 
+            transform: translateY(-4px); 
+            border-color: var(--primary); 
+        }
+
+        /* نافذة المعاينة والتحميل أثناء استجابة الموديل */
+        .ai-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .ai-modal-card {
+            background: white;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 480px;
+            padding: 28px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            animation: popIn 0.3s ease;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e0e7ff;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 15px auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .nutri-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .nutri-box h5 { margin: 0 0 4px; color: var(--text-muted); font-size: 0.75rem; }
+        .nutri-box strong { font-size: 1.1rem; color: #0f172a; }
+    </style>
+</head>
+<body style="background-color: #f8fafc;">
+
+    <!-- عنصر استقبال الصور من الكاميرا أو المعرض (مخفي ويتم تفعيله برمجياً) -->
+    <input type="file" id="mealCameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handleImageSelected(event)">
+
+    <header class="top-bar" style="background: white; border-bottom: 1px solid var(--border-color);">
+        <div style="font-weight: 800; color: var(--primary); font-size: 1.3rem;">🦸‍♂️ Sugar Hero Arena</div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button onclick="setApiKeyPrompt()" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:0.8rem;">
+                🔑 ضبط مفتاح الـ API
+            </button>
+            <a href="index.html" class="btn-logout">خروج</a>
+        </div>
+    </header>
+
+    <main class="dashboard-wrapper">
+        <div class="hero-banner">
+            <span style="font-size: 4rem;" id="heroCharacter">🦸🏽‍♂️</span>
+            <h1 id="patientNameHeader" style="margin-top: 8px;">مرحباً بالبطل!</h1>
+            <p id="levelBadge" style="font-weight: bold; background: #f59e0b; display: inline-block; padding: 3px 12px; border-radius: 12px; margin-top: 5px;">المستوى 1 ⚡</p>
+            
+            <div class="xp-bar-bg">
+                <div class="xp-bar-fill" id="xpFillBar" style="width: 50%;"></div>
+            </div>
+            <small id="xpLabel">طاقة البطل: 0 / 0 XP</small>
+        </div>
+
+        <div class="action-grid">
+            <!-- الكبسة الرئيسية لفحص الوجبة الحقيقي -->
+            <div class="action-box" onclick="triggerRealAiCamera()" style="border-color: var(--primary); background: #fdfefe;">
+                <span style="position: absolute; top: 10px; left: 10px; background: #4f46e5; color: white; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">موديل فعلي 🟢</span>
+                <div style="font-size: 3.5rem; margin-bottom: 8px;">📸</div>
+                <h3 style="color: var(--primary);">فحص الوجبة بالـ AI الحقيقي</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">التقط صورة طبقك ليتعرف عليها Gemini فوراً</p>
+            </div>
+
+            <div class="action-box" onclick="triggerAddGlucose()">
+                <div style="font-size: 3.5rem; margin-bottom: 8px;">🩸</div>
+                <h3>تسجيل قراءة السكر</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">أدخل قراءة الجهاز واكسب 30 XP</p>
+            </div>
+
+            <div class="action-box" style="border-color: var(--danger); background: #fef2f2;" onclick="alert('🚨 تم إرسال نداء استغاثة مباشر لولي الأمر!')">
+                <div style="font-size: 3.5rem; margin-bottom: 8px;">🚨</div>
+                <h3 style="color: var(--danger);">زر النجدة (SOS)</h3>
+                <p style="color: var(--danger); font-size: 0.9rem;">إشعار ولي الأمر والطبيب فوراً</p>
+            </div>
+        </div>
+
+        <!-- سجل الوجبات المحللة بالـ AI -->
+        <div class="dash-card" style="margin-top: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="margin: 0;">سجل الوجبات المحللة بالذكاء الاصطناعي:</h3>
+                <span class="badge badge-success">محدث عبر Gemini Vision</span>
+            </div>
+            <div id="mealsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+    </main>
+
+    <!-- نافذة منبثقة للمعالجة وعرض نتائج الفحص -->
+    <div id="aiModal" class="ai-modal-overlay">
+        <div class="ai-modal-card">
+            <div id="aiLoadingView">
+                <div class="spinner"></div>
+                <h3 style="margin: 10px 0 6px;">جاري تحليل طبق الطعام بواسطة Gemini AI...</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">يتم الآن تقدير الكربوهيدرات والسكريات والسعرات الحرارية بدقة إكلينيكية.</p>
+                <img id="previewImg" style="width: 140px; height: 140px; object-fit: cover; border-radius: 12px; margin-top: 10px; border: 2px solid #e2e8f0;">
+            </div>
+
+            <div id="aiResultView" style="display: none;">
+                <span style="font-size: 3rem;">✨</span>
+                <h2 id="aiFoodTitle" style="margin: 6px 0; color: #0f172a;">اسم الوجبة</h2>
+                <span id="aiGlycemicBadge" style="background: #dcfce7; color: #166534; font-weight: bold; font-size: 0.8rem; padding: 3px 10px; border-radius: 10px;">مؤشر جلايسيمي منخفض</span>
+
+                <div class="nutrition-grid">
+                    <div class="nutri-box">
+                        <h5>كربوهيدرات</h5>
+                        <strong id="aiCarbsVal" style="color: #4f46e5;">0g</strong>
+                    </div>
+                    <div class="nutri-box">
+                        <h5>سعرات</h5>
+                        <strong id="aiCaloriesVal">0</strong>
+                    </div>
+                    <div class="nutri-box">
+                        <h5>سكريات</h5>
+                        <strong id="aiSugarVal" style="color: #ef4444;">0g</strong>
+                    </div>
+                </div>
+
+                <div id="aiAdviceBox" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 12px; border-radius: 10px; font-size: 0.88rem; text-align: right; margin-bottom: 20px;">
+                    نصيحة الطبيب الذكي هنا...
+                </div>
+
+                <button class="btn btn-doc-primary" style="width: 100%; padding: 12px; font-weight: 800;" onclick="confirmAndSaveMeal()">
+                    اعتماد الوجبة وحصد +50 XP ⚡
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- استدعاء السكربتات الموحدة -->
+    <script src="mockData.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let currentPatient = null;
+        let lastAnalyzedMeal = null;
+
+        // 1. إدارة مفتاح الـ API وتخزينه محلياً
+        function getApiKey() {
+            return localStorage.getItem('GEMINI_API_KEY') || '';
+        }
+
+        function setApiKeyPrompt() {
+            const key = prompt("أدخل مفتاح Gemini API Key الخاص بك:", getApiKey());
+            if (key !== null) {
+                localStorage.setItem('GEMINI_API_KEY', key.trim());
+                alert("✅ تم حفظ مفتاح الـ API بنجاح!");
+            }
+        }
+
+        // 2. تفعيل كبسة الكاميرا
+        function triggerRealAiCamera() {
+            if (!getApiKey()) {
+                alert("⚠️ يرجى إدخال مفتاح Gemini API أولاً عبر زر (🔑 ضبط مفتاح الـ API) بالأعلى لتشغيل الموديل الفعلي.");
+                setApiKeyPrompt();
+                if (!getApiKey()) return;
+            }
+            document.getElementById('mealCameraInput').click();
+        }
+
+        // 3. قراءة الصورة وإرسالها للموديل
+        function handleImageSelected(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result.split(',')[1];
+                const mimeType = file.type || 'image/jpeg';
+                
+                // عرض شاشة التحميل ومعاينة الصورة
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('aiLoadingView').style.display = 'block';
+                document.getElementById('aiResultView').style.display = 'none';
+                document.getElementById('aiModal').style.display = 'flex';
+
+                // إرسال الصورة لـ Gemini Vision API
+                callGeminiVisionAPI(base64Data, mimeType);
+            };
+            reader.readAsDataURL(file);
+            event.target.value = ''; // تصفير الحقل للمرات القادمة
+        }
+
+      // دالة مساعدة لتعديل النصوص بأمان دون التسبب في خطأ null
+        function safeSetText(elementId, text) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.innerText = text;
+            }
+        }
+
+        // دالة عرض النتائج الآمنة
+        function showAiResults(result) {
+            lastAnalyzedMeal = result;
+
+            safeSetText('aiFoodTitle', result.food_name || "وجبة صحية");
+            safeSetText('aiCarbsVal', (result.carbs_grams || 0) + 'g');
+            safeSetText('aiCaloriesVal', result.calories || 0);
+            safeSetText('aiSugarVal', (result.sugar_grams || 0) + 'g');
+            safeSetText('aiGlycemicBadge', `مؤشر جلايسيمي ${result.glycemic_index || 'معتدل'}`);
+            safeSetText('aiAdviceBox', `💡 نصيحة البطل: ${result.ai_advice || 'وجبة ممتازة، احرص على شرب الماء!'}`);
+
+            const loadingView = document.getElementById('aiLoadingView');
+            const resultView = document.getElementById('aiResultView');
+            if (loadingView) loadingView.style.display = 'none';
+            if (resultView) resultView.style.display = 'block';
+        }
+
+        // استدعاء الموديل مع حماية كاملة من أخطاء الـ null
+        async function callGeminiVisionAPI(base64Image, mimeType) {
+            const apiKey = getApiKey();
+            if (!apiKey) {
+                alert("يرجى ضبط مفتاح الـ API أولاً.");
+                closeAiModal();
+                return;
+            }
+
+            const fallbackModels = [
+                "gemini-2.0-flash",
+                "gemini-1.5-flash",
+                "gemini-2.5-flash"
+            ];
+
+            const promptText = `
+                أنت خبير تغذية سريرية وسكري لمنصة Sugar Hero.
+                حلل طبق الطعام المرفق بدقة لمريض السكري، وأرجع كائن JSON حصراً بالحقول:
+                - food_name: اسم الوجبة بالعربية
+                - calories: رقم تقديري للسعرات
+                - carbs_grams: رقم تقديري للكربوهيدرات
+                - sugar_grams: رقم تقديري للسكريات
+                - glycemic_index: (منخفض أو متوسط أو مرتفع)
+                - ai_advice: نصيحة طبية سريعة وموجزة لمريض السكري
+            `;
+
+            const requestBody = {
+                contents: [{
+                    parts: [
+                        { text: promptText },
+                        {
+                            inlineData: {
+                                mimeType: mimeType,
+                                data: base64Image
+                            }
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    maxOutputTokens: 300,
+                    temperature: 0.1
+                }
+            };
+
+            let lastErrorMessage = "";
+
+            for (let i = 0; i < fallbackModels.length; i++) {
+                const modelName = fallbackModels[i];
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+
+                try {
+                    safeSetText('loadingStatusText', i === 0 ? "جاري التعرف على الوجبة وتحليل الكربوهيدرات..." : `جاري التبديل لمسار بديل (${modelName})...`);
+
+                    aiAbortController = new AbortController();
+                    const timeoutId = setTimeout(() => aiAbortController.abort(), 12000);
+
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestBody),
+                        signal: aiAbortController.signal
+                    });
+
+                    clearTimeout(timeoutId);
+
+                    const responseText = await response.text();
+                    if (!responseText) continue;
+
+                    const data = JSON.parse(responseText);
+
+                    if (data.error) {
+                        lastErrorMessage = data.error.message;
+                        continue;
+                    }
+
+                    if (data.candidates && data.candidates[0].content) {
+                        const rawText = data.candidates[0].content.parts[0].text;
+                        const parsedData = JSON.parse(rawText);
+                        
+                        showAiResults(parsedData);
+                        return;
+                    }
+
+                } catch (err) {
+                    lastErrorMessage = err.message;
+                }
+            }
+
+            alert("تعذر إكمال التحليل في الوقت الحالي: " + lastErrorMessage + "\nيرجى إعادة المحاولة.");
+            closeAiModal();
+        }
+
+        // 5. عرض النتائج المستخرجة
+        function showAiResults(result) {
+            lastAnalyzedMeal = result;
+
+            document.getElementById('aiFoodTitle').innerText = result.food_name || "وجبة صحية";
+            document.getElementById('aiCarbsVal').innerText = (result.carbs_grams || 0) + 'g';
+            document.getElementById('aiCaloriesVal').innerText = result.calories || 0;
+            document.getElementById('aiSugarVal').innerText = (result.sugar_grams || 0) + 'g';
+            document.getElementById('aiGlycemicBadge').innerText = `مؤشر جلايسيمي ${result.glycemic_index || 'معتدل'}`;
+            document.getElementById('aiAdviceBox').innerText = `💡 نصيحة البطل: ${result.ai_advice || 'وجبة ممتازة، احرص على شرب الماء!'}`;
+
+            document.getElementById('aiLoadingView').style.display = 'none';
+            document.getElementById('aiResultView').style.display = 'block';
+        }
+
+        // 6. اعتماد وحفظ الوجبة في الـ MockData وزيادة الـ XP
+        function confirmAndSaveMeal() {
+            if (!lastAnalyzedMeal) return;
+
+            // الحفظ في قاعدة البيانات المركزية mockData
+            const res = SugarHeroDB.addMealRecord(
+                currentPatient.id,
+                lastAnalyzedMeal.food_name,
+                lastAnalyzedMeal.calories,
+                lastAnalyzedMeal.carbs_grams
+            );
+
+            document.getElementById('aiModal').style.display = 'none';
+            alert(`🎉 رائع يا ${currentPatient.name}! تمت إضافة الوجبة وحصلت على +50 XP لدرعك!`);
+            refreshPatientDashboardUI();
+        }
+
+        // تحديث واجهة المريض
+        function refreshPatientDashboardUI() {
+            currentPatient = SugarHeroDB.getActivePatient();
+            const gameData = SugarHeroDB.getGamificationData(currentPatient.id);
+
+            document.getElementById('patientNameHeader').innerText = `أهلاً بك يا ${currentPatient.name}!`;
+            document.getElementById('heroCharacter').innerText = currentPatient.avatar || '🦸🏽‍♂️';
+            document.getElementById('levelBadge').innerText = `المستوى ${gameData.level} ⚡`;
+            
+            const pct = Math.min(100, Math.round((gameData.totalXp / gameData.maxXp) * 100));
+            document.getElementById('xpFillBar').style.width = pct + '%';
+            document.getElementById('xpLabel').innerText = `طاقة البطل: ${gameData.totalXp} / ${gameData.maxXp} XP`;
+
+            // عرض الوجبات المسجلة
+            const container = document.getElementById('mealsList');
+            container.innerHTML = '';
+            const meals = SugarHeroDB.data.mealLogs.filter(m => m.patientId === currentPatient.id);
+
+            if (meals.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">لم تقم بتصوير أي وجبة اليوم بعد.</p>';
+            } else {
+                meals.slice(0, 5).forEach(m => {
+                    const row = document.createElement('div');
+                    row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;";
+                    row.innerHTML = `
+                        <div>
+                            <strong>🍽️ ${m.foodName}</strong>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">${m.createdAt}</div>
+                        </div>
+                        <div style="text-align:left;">
+                            <span style="color:var(--primary); font-weight:bold; font-size:1.05rem;">${m.carbsGrams}g كارب</span>
+                            <div style="font-size:0.75rem; color:gray;">${m.calories} سعرة</div>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            }
+        }
+
+        function triggerAddGlucose() {
+            const val = prompt("أدخل قراءة السكر الحالية (mg/dL):");
+            if (!val) return;
+            const res = SugarHeroDB.addGlucoseReading(currentPatient.id, val, "الآن");
+            if (res.success) {
+                alert(`✅ تم حفظ القراءة! وحصلت على +${res.xpGained} XP.`);
+                refreshPatientDashboardUI();
+            } else {
+                alert(res.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', refreshPatientDashboardUI);
+    </script>
+</body>
+</html>

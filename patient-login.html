@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دخول المريض - Sugar Hero</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="#" class="lang-switch"><span>🌐</span> اختر اللغة</a>
+        <a href="index.html" class="back-circle-btn" title="رجوع">➔</a>
+    </header>
+
+    <main class="main-container">
+        <div class="auth-card">
+            <h2 class="view-heading">
+                <span>🍎</span>
+                <span>دخول بطل السكري</span>
+                <span>✏️</span>
+            </h2>
+
+            <form class="form-wrapper" onsubmit="event.preventDefault(); handlePatientFastEntry();">
+                <div class="sso-divider"><span>الدخول المباشر برمز البطل (6 أرقام)</span></div>
+                
+                <div class="patient-code-wrapper">
+                    <input type="text" id="patient-code" class="code-input-field" maxlength="6" placeholder="● ● ● ● ● ●" value="482910">
+                    <button type="button" class="btn-go" onclick="handlePatientFastEntry()">اذهب ➔</button>
+                </div>
+
+                <button type="button" class="btn-qr-scan" onclick="handleQrScanSim()">
+                    <span>مسح الرمز (QR Code)</span>
+                    <span>📷</span>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <a href="#">سياسة خصوصية الأبطال</a> | <a href="#">إشعار COPPA</a>
+    </footer>
+
+    <!-- الترتيب هنا هو الأساس لعمل الدخول -->
+    <script src="mockData.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

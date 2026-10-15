@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بدء حساب أسرة - Sugar Hero</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="#" class="lang-switch"><span>🌐</span> اختر اللغة</a>
+        <a href="guardian-login.html" class="back-circle-btn" title="رجوع">➔</a>
+    </header>
+
+    <main class="main-container">
+        <div class="auth-card">
+            <h2 class="view-heading">إنشاء حساب عائلة جديد</h2>
+
+            <form class="form-wrapper" onsubmit="event.preventDefault(); window.location.href='guardian-dashboard.html';">
+                <div class="form-group">
+                    <label>الاسم الكامل لولي الأمر</label>
+                    <input type="text" placeholder="الاسم الرباعي" required>
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" placeholder="parent@domain.com" required>
+                </div>
+                <div class="form-group">
+                    <label>صلة القرابة</label>
+                    <select required>
+                        <option>أب</option>
+                        <option>أم</option>
+                        <option>ابن / ابنة (لمتابعة الوالدين)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>رقم هاتف الطوارئ (Emergency Contact) *</label>
+                    <input type="tel" placeholder="07XXXXXXXX" required>
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="guard-reg-pass" placeholder="أدخل كلمة المرور" required>
+                    <span class="password-toggle" onclick="togglePassword('guard-reg-pass')">👁️</span>
+                </div>
+
+                <button type="submit" class="bottom-action-btn">تأكيد إنشاء حساب الأسرة</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

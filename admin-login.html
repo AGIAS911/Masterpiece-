@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة إدارة النظام - Sugar Hero</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        .admin-auth-card {
+            border-top: 5px solid #0f172a;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
+            background: #ffffff;
+            padding: 40px 35px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 480px;
+        }
+        .security-badge {
+            background: #f1f5f9;
+            color: #334155;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #cbd5e1;
+        }
+        .btn-admin-submit {
+            background-color: #0f172a;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.2s;
+        }
+        .btn-admin-submit:hover {
+            background-color: #1e293b;
+        }
+        .security-notice {
+            margin-top: 24px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px dashed #cbd5e1;
+            font-size: 0.78rem;
+            color: #64748b;
+            line-height: 1.6;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="#" class="lang-switch"><span>🌐</span> اختر اللغة</a>
+        <a href="index.html" class="back-circle-btn" title="العودة للرئيسية">➔</a>
+    </header>
+
+    <main class="main-container">
+        <div class="admin-auth-card">
+            
+            <div style="text-align: center;">
+                <span class="security-badge">
+                    <span>🔒</span> وصول إداري محمي ومشفّر
+                </span>
+                <h2 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 8px; color: #0f172a;">
+                    لوحة تحكم المسؤول (Admin)
+                </h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">
+                    الرجاء إدخال البريد الإداري المعتمد وكلمة المرور للوصول
+                </p>
+            </div>
+
+            <!-- النموذج محصور بالإيميل والباسورد فقط -->
+            <form class="form-wrapper" onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label for="admin-email">البريد الإلكتروني للإدارة</label>
+                    <input 
+                        type="email" 
+                        id="admin-email" 
+                        placeholder="admin@sugarhero.com" 
+                        value="admin@sugarhero.com" 
+                        required 
+                        autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-pass">كلمة المرور الإدارية</label>
+                    <input 
+                        type="password" 
+                        id="admin-pass" 
+                        placeholder="••••••••••••" 
+                        value="AdminSecurePass2026" 
+                        required>
+                    <span class="password-toggle" onclick="togglePassword('admin-pass')">👁️</span>
+                </div>
+
+                <button type="submit" class="btn-admin-submit">
+                    تسجيل الدخول للوحة التحكم ➔
+                </button>
+
+                <div class="security-notice">
+                    ⚠️ <strong>تنبيه أمني:</strong> الدخول مقتصر على الموظفين المخولين فقط. كافة محاولات الدخول وعناوين IP تخضع للتسجيل والتدقيق وفق لوائح الحماية الطبية HIPAA & GDPR.
+                </div>
+            </form>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        بوابة الإدارة المركزية | Sugar Hero Platform Engine v2.4
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('admin-email').value;
+            const pass = document.getElementById('admin-pass').value;
+
+            if (email && pass) {
+                // محاكاة التحقق من الصلاحيات الإدارية
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                alert('يرجى ملء جميع الحقول المطلوبة!');
+            }
+        }
+    </script>
+</body>
+</html>
